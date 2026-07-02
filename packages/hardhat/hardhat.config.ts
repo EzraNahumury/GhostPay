@@ -31,17 +31,15 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    // Celoscan verification (single Etherscan v2 key works across chains).
-    apiKey: {
-      celo: CELOSCAN_API_KEY,
-      celoSepolia: CELOSCAN_API_KEY,
-    },
+    // Etherscan API V2 — a single multichain key, routed by chainid.
+    apiKey: CELOSCAN_API_KEY,
     customChains: [
       {
         network: "celo",
         chainId: 42220,
         urls: {
-          apiURL: "https://api.celoscan.io/api",
+          // Etherscan API V2 (single multichain key, routed by chainid)
+          apiURL: "https://api.etherscan.io/v2/api",
           browserURL: "https://celoscan.io",
         },
       },
@@ -49,7 +47,7 @@ const config: HardhatUserConfig = {
         network: "celoSepolia",
         chainId: 11142220,
         urls: {
-          apiURL: "https://api-sepolia.celoscan.io/api",
+          apiURL: "https://api.etherscan.io/v2/api",
           browserURL: "https://sepolia.celoscan.io",
         },
       },
