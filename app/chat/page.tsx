@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import LayoutShell from "@/components/LayoutShell";
 import AgentGate from "@/components/AgentGate";
 import { useAgent } from "@/hooks/useAgent";
+import { useBalances } from "@/hooks/useBalances";
 import { useLlm, LLM_MODELS, type ChatMessage, type LlmModel } from "@/hooks/useLlm";
 import { PAY_TOKENS, explorerTxUrl, type TokenInfo } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,10 @@ import { toast } from "sonner";
 function ChatInner() {
   const { agentId } = useAgent();
   const { ask, step, calls, lastTxHash, refundable, selfRefund } = useLlm(agentId);
+  const { bySymbol, celo } = useBalances();
   const [model, setModel] = useState<LlmModel>(LLM_MODELS[0]);
   const [token, setToken] = useState<TokenInfo>(PAY_TOKENS[0]);
+  const tokenBal = token.symbol === "CELO" ? celo.formatted : bySymbol(token.symbol)?.formatted ?? 0;
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const busy = step === "paying" || step === "generating";
@@ -23,6 +26,10 @@ function ChatInner() {
   const send = async () => {
     const text = input.trim();
     if (!text || busy) return;
+    if (tokenBal < model.price) {
+      toast.error(`Not enough ${token.symbol} — need ${model.price}, have ${tokenBal.toFixed(3)}`);
+      return;
+    }
     const next: ChatMessage[] = [...messages, { role: "user", content: text }];
     setMessages(next);
     setInput("");
@@ -83,6 +90,9 @@ function ChatInner() {
             {t.symbol}
           </button>
         ))}
+        <span className="ml-auto text-[11px] text-[#A7B0C8]">
+          Balance: {tokenBal.toFixed(2)} {token.symbol}
+        </span>
       </div>
 
       {/* Messages */}

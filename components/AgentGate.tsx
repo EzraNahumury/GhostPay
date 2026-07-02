@@ -42,9 +42,12 @@ export default function AgentGate({ children }: { children: React.ReactNode }) {
             ? "Connecting your MiniPay wallet…"
             : "Connect a Celo wallet (MiniPay, Valora, or any injected wallet) to continue."}
         </p>
-        <Button onClick={connectWallet} className="gap-2 bg-[#FBCB0A] text-[#0B0C10] font-semibold rounded-full px-6">
-          <Wallet className="w-4 h-4" /> Connect Wallet
-        </Button>
+        {/* No manual button inside MiniPay — the injected wallet auto-connects. */}
+        {!isMiniPayWallet && (
+          <Button onClick={connectWallet} className="gap-2 bg-[#FBCB0A] text-[#0B0C10] font-semibold rounded-full px-6">
+            <Wallet className="w-4 h-4" /> Connect Wallet
+          </Button>
+        )}
       </Center>
     );
   }

@@ -77,6 +77,12 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
           </Button>
         </PopoverContent>
       </Popover>
+    ) : isMiniPayWallet ? (
+      // Inside MiniPay the wallet is injected + auto-connected — no manual button.
+      <span className="flex items-center gap-2 px-3 py-1.5 text-xs text-[#A7B0C8]">
+        <span className="w-2 h-2 rounded-full bg-[#FBCB0A] animate-pulse" />
+        Connecting MiniPay…
+      </span>
     ) : (
       <Button
         onClick={connectWallet}
@@ -84,7 +90,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
         className="gap-2 bg-[#FBCB0A] text-[#0B0C10] hover:brightness-110 transition rounded-full font-semibold px-5"
       >
         <Wallet className="w-4 h-4" />
-        {isMiniPayWallet ? "Connect MiniPay" : "Connect Wallet"}
+        Connect Wallet
       </Button>
     );
 

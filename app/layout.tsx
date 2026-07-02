@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { ProvidersAndLayout } from "./ProvidersAndLayout";
 import "./globals.css";
@@ -26,6 +26,16 @@ export const metadata: Metadata = {
   title: "GhostPay — Pay-as-you-go AI Agent on Celo",
   description:
     "Your onchain AI agent on Celo. Pay per LLM call in cUSD — no subscription. Built for MiniPay.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "GhostPay" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0B0C10",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

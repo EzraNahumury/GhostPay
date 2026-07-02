@@ -3,6 +3,7 @@
 import Link from "next/link";
 import LayoutShell from "@/components/LayoutShell";
 import AgentGate from "@/components/AgentGate";
+import AgentInsight from "@/components/AgentInsight";
 import { useAgent } from "@/hooks/useAgent";
 import { useBalances } from "@/hooks/useBalances";
 import { useLlm } from "@/hooks/useLlm";
@@ -66,6 +67,8 @@ function DashInner() {
           <div className="text-2xl font-semibold">{payments.length}</div>
         </Card>
       </div>
+
+      <AgentInsight />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link href="/chat">
