@@ -138,7 +138,7 @@ export default function Section4Vault() {
             >
               <GhostMascot
                 src="/images/ghost-locked.png"
-                className="w-full h-auto drop-shadow-[0_0_30px_rgba(179,71,255,0.3)]"
+                className="w-full h-auto drop-shadow-[0_0_30px_rgba(251,203,10,0.3)]"
                 animate={false}
               />
             </div>
@@ -160,8 +160,8 @@ export default function Section4Vault() {
                 ref={lockRef}
                 className="mt-6 md:mt-8 flex items-center gap-3"
               >
-                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-[#B347FF] flex items-center justify-center animate-pulse-slow">
-                  <Shield className="w-6 h-6 md:w-7 md:h-7 text-[#B347FF]" strokeWidth={1.5} />
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-[#FBCB0A] flex items-center justify-center animate-pulse-slow">
+                  <Shield className="w-6 h-6 md:w-7 md:h-7 text-[#FBCB0A]" strokeWidth={1.5} />
                 </div>
                 <span className="font-heading text-lg md:text-xl font-medium text-[#F4F6FF]">
                   Vault Active
@@ -175,7 +175,7 @@ export default function Section4Vault() {
                     key={chip.label}
                     className="status-chip flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)]"
                   >
-                    <chip.icon className="w-4 h-4 text-[#B347FF]" strokeWidth={1.5} />
+                    <chip.icon className="w-4 h-4 text-[#FBCB0A]" strokeWidth={1.5} />
                     <span className="text-sm text-[#A7B0C8]">{chip.label}</span>
                   </div>
                 ))}

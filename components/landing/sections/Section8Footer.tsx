@@ -122,7 +122,7 @@ export default function Section8Footer() {
             ref={ghostRef}
             className="w-28 h-28 md:w-40 md:h-40 mb-8"
           >
-            <GhostMascot className="w-full h-full object-contain drop-shadow-[0_0_60px_rgba(179,71,255,0.6)]" />
+            <GhostMascot className="w-full h-full object-contain drop-shadow-[0_0_60px_rgba(251,203,10,0.6)]" />
           </div>
 
           {/* Text */}
@@ -134,7 +134,7 @@ export default function Section8Footer() {
           </p>
 
           {/* CTA Button */}
-          <button className="px-10 py-5 rounded-full bg-[#B347FF] text-[#0B0C10] font-heading font-bold text-lg hover:scale-105 hover:shadow-[0_0_50px_rgba(179,71,255,0.6)] transition-all duration-300">
+          <button className="px-10 py-5 rounded-full bg-[#FBCB0A] text-[#0B0C10] font-heading font-bold text-lg hover:scale-105 hover:shadow-[0_0_50px_rgba(251,203,10,0.6)] transition-all duration-300">
             Join the Waitlist
           </button>
         </div>
@@ -159,44 +159,31 @@ export default function Section8Footer() {
             </p>
           </div>
 
-          {/* 4 Link Columns (Right) */}
+          {/* Link Columns (Right) */}
           <div className="flex flex-wrap md:flex-nowrap gap-12 md:gap-24 lg:gap-32">
             <div className="footer-col flex flex-col gap-5">
-              <h4 className="font-heading text-sm font-bold text-[#F4F6FF]">Pages</h4>
+              <h4 className="font-heading text-sm font-bold text-[#F4F6FF]">App</h4>
               <ul className="flex flex-col gap-4">
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">All Products</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Studio</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Clients</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Blog</a></li>
+                <li><a href="/dashboard" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Dashboard</a></li>
+                <li><a href="/chat" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">AI Chat</a></li>
+                <li><a href="/payments" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Payments</a></li>
+                <li><a href="/vault" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Vault</a></li>
               </ul>
             </div>
 
             <div className="footer-col flex flex-col gap-5">
-              <h4 className="font-heading text-sm font-bold text-[#F4F6FF]">Socials</h4>
+              <h4 className="font-heading text-sm font-bold text-[#F4F6FF]">Build</h4>
               <ul className="flex flex-col gap-4">
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Facebook</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Instagram</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Twitter</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">LinkedIn</a></li>
+                <li><a href="https://github.com/EzraNahumury/GhostPay" target="_blank" rel="noreferrer" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">GitHub</a></li>
+                <li><a href="https://celoscan.io/address/0x718664652C3A7eb6A2c23D8986338a237087d7CD" target="_blank" rel="noreferrer" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Contracts (Celoscan)</a></li>
               </ul>
             </div>
 
             <div className="footer-col flex flex-col gap-5">
-              <h4 className="font-heading text-sm font-bold text-[#F4F6FF]">Legal</h4>
+              <h4 className="font-heading text-sm font-bold text-[#F4F6FF]">Celo</h4>
               <ul className="flex flex-col gap-4">
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Cookie Policy</a></li>
-              </ul>
-            </div>
-
-            <div className="footer-col flex flex-col gap-5">
-              <h4 className="font-heading text-sm font-bold text-[#F4F6FF]">Register</h4>
-              <ul className="flex flex-col gap-4">
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Sign Up</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Login</a></li>
-                <li><a href="#" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Forgot Password</a></li>
+                <li><a href="https://www.minipay.xyz/" target="_blank" rel="noreferrer" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">MiniPay</a></li>
+                <li><a href="https://docs.celo.org/" target="_blank" rel="noreferrer" className="text-sm text-[#A7B0C8] hover:text-white transition-colors">Celo Docs</a></li>
               </ul>
             </div>
           </div>

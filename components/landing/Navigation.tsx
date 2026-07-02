@@ -52,7 +52,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between px-6 md:px-12 py-5 max-w-[1920px] mx-auto">
           {/* Logo */}
           <a href="#" className="font-heading text-xl font-semibold tracking-tight text-[#F4F6FF]">
-            Ghost<span className="text-[#B347FF]">Pay</span>
+            Ghost<span className="text-[#FBCB0A]">Pay</span>
           </a>
 
           {/* Desktop Nav */}
@@ -96,7 +96,7 @@ export default function Navigation() {
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className="menu-link font-heading text-4xl font-medium text-[#F4F6FF] hover:text-[#B347FF] transition-colors duration-300"
+              className="menu-link font-heading text-4xl font-medium text-[#F4F6FF] hover:text-[#FBCB0A] transition-colors duration-300"
             >
               {item.label}
             </button>

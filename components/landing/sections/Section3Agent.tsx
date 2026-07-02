@@ -142,7 +142,7 @@ export default function Section3Agent() {
             className="absolute left-[8%] md:left-[12%] top-1/2 -translate-y-1/2 w-[32%] md:w-[28%]"
             style={{ transformStyle: 'preserve-3d', transform: 'translateY(-50%) translateZ(40px)' }}
           >
-            <GhostMascot className="w-full h-auto drop-shadow-[0_0_30px_rgba(179,71,255,0.3)]" />
+            <GhostMascot className="w-full h-auto drop-shadow-[0_0_30px_rgba(251,203,10,0.3)]" />
           </div>
 
           {/* Divider line */}
@@ -161,7 +161,7 @@ export default function Section3Agent() {
             </div>
 
             {/* Agent bubble */}
-            <div className="chat-bubble self-start max-w-[95%] bg-[rgba(179,71,255,0.08)] rounded-2xl rounded-tl-sm px-4 py-3 border border-[rgba(179,71,255,0.25)]">
+            <div className="chat-bubble self-start max-w-[95%] bg-[rgba(251,203,10,0.08)] rounded-2xl rounded-tl-sm px-4 py-3 border border-[rgba(251,203,10,0.25)]">
               <p className="text-sm md:text-base text-[#F4F6FF]">
                 Got it. Weekly $120 to Design Contractor •••1234. First send: this Friday.
               </p>
@@ -172,9 +172,9 @@ export default function Section3Agent() {
               ref={indicatorRef}
               className="self-start flex items-center gap-1.5 px-4 py-2 rounded-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] w-fit"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#B347FF] animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-[#B347FF] animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-[#B347FF] animate-bounce" style={{ animationDelay: '300ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FBCB0A] animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FBCB0A] animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FBCB0A] animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         </div>

@@ -1,11 +1,17 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useReadContract } from "wagmi";
-import { formatUnits } from "viem";
+import { useAccount, useReadContract, useSignMessage } from "wagmi";
 import { memoryVault } from "@/lib/contracts";
-import { uploadToIpfs, getIpfsUrl } from "@/lib/IpfsService";
+import { uploadToIpfs, downloadFromIpfs, getIpfsUrl } from "@/lib/IpfsService";
 import { saveLocalMemory } from "@/lib/localMemoryStore";
+import {
+  VAULT_SIGN_MESSAGE,
+  deriveAesKey,
+  encryptBytes,
+  decryptBytes,
+  isEncrypted,
+} from "@/lib/cryptoVault";
 import { useCustomWallet } from "@/contexts/CustomWallet";
 
 const VIS = ["private", "shared", "shared_with_auditor"] as const;
@@ -21,12 +27,25 @@ export interface MemoryView {
   label: string;
 }
 
-export type UploadStep = "idle" | "uploading" | "storing" | "done" | "error";
+export type UploadStep = "idle" | "encrypting" | "uploading" | "storing" | "done" | "error";
+
+// In-memory derived-key cache (per wallet) so we sign at most once per session.
+let cachedKey: { addr: string; key: CryptoKey } | null = null;
 
 export function useMemories(agentId: bigint | undefined) {
+  const { address } = useAccount();
+  const { signMessageAsync } = useSignMessage();
   const { sendTransaction } = useCustomWallet();
   const [step, setStep] = useState<UploadStep>("idle");
   const [error, setError] = useState<string | null>(null);
+
+  const getKey = useCallback(async (): Promise<CryptoKey> => {
+    if (cachedKey && cachedKey.addr === address) return cachedKey.key;
+    const sig = await signMessageAsync({ message: VAULT_SIGN_MESSAGE });
+    const key = await deriveAesKey(sig);
+    cachedKey = { addr: address ?? "", key };
+    return key;
+  }, [address, signMessageAsync]);
 
   const { data: raw, refetch, isPending } = useReadContract({
     ...memoryVault,
@@ -53,8 +72,7 @@ export function useMemories(agentId: bigint | undefined) {
   });
 
   /**
-   * Upload a file to IPFS and record the pointer on-chain.
-   * (Client-side encryption via Lit can be layered before upload later.)
+   * Encrypt (if private) → upload to IPFS → record the pointer on-chain.
    */
   const upload = useCallback(
     async (params: {
@@ -67,17 +85,23 @@ export function useMemories(agentId: bigint | undefined) {
       if (!agentId) throw new Error("Create an agent first");
       setError(null);
       try {
-        setStep("uploading");
-        const { cid, size } = await uploadToIpfs(params.data, params.filename);
+        let payload = params.data;
+        if (params.isPrivate) {
+          setStep("encrypting");
+          const key = await getKey();
+          payload = await encryptBytes(key, params.data);
+        }
 
-        // local index (visible immediately even if the chain write lags)
+        setStep("uploading");
+        const { cid } = await uploadToIpfs(payload, params.filename);
+
         saveLocalMemory({
           id: `local-${Date.now()}`,
           blobId: cid,
           dataType: params.dataType,
           label: params.label,
           visibility: params.isPrivate ? "private" : "public",
-          dataSize: size,
+          dataSize: params.data.length,
           timestamp: Date.now(),
         });
 
@@ -90,8 +114,8 @@ export function useMemories(agentId: bigint | undefined) {
             agentId,
             cid,
             params.dataType,
-            params.isPrivate ? 0 : 1, // Visibility enum
-            BigInt(size),
+            params.isPrivate ? 0 : 1,
+            BigInt(params.data.length),
             params.label,
           ],
         });
@@ -104,11 +128,29 @@ export function useMemories(agentId: bigint | undefined) {
         throw e;
       }
     },
-    [agentId, sendTransaction, refetch],
+    [agentId, getKey, sendTransaction, refetch],
   );
 
-  const totalSizeMB =
-    memories.reduce((s, m) => s + m.size, 0) / (1024 * 1024);
+  /**
+   * Fetch a memory blob, decrypt if it's an encrypted (private) file, and open it.
+   */
+  const openMemory = useCallback(
+    async (m: MemoryView) => {
+      const { data } = await downloadFromIpfs(m.cid);
+      let bytes = data;
+      if (isEncrypted(bytes)) {
+        const key = await getKey();
+        bytes = await decryptBytes(key, bytes);
+      }
+      const blob = new Blob([bytes as BlobPart]);
+      const objUrl = URL.createObjectURL(blob);
+      window.open(objUrl, "_blank");
+      setTimeout(() => URL.revokeObjectURL(objUrl), 60_000);
+    },
+    [getKey],
+  );
 
-  return { memories, isPending, upload, step, error, refetch, totalSizeMB, formatUnits };
+  const totalSizeMB = memories.reduce((s, m) => s + m.size, 0) / (1024 * 1024);
+
+  return { memories, isPending, upload, openMemory, step, error, refetch, totalSizeMB };
 }

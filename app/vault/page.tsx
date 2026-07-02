@@ -14,13 +14,13 @@ const DATA_TYPES = ["payslip", "kyc", "receipt", "report", "proof", "image", "ot
 
 function VaultInner() {
   const { agentId } = useAgent();
-  const { memories, upload, step, totalSizeMB } = useMemories(agentId);
+  const { memories, upload, openMemory, step, totalSizeMB } = useMemories(agentId);
   const [file, setFile] = useState<File | null>(null);
   const [label, setLabel] = useState("");
   const [dataType, setDataType] = useState("receipt");
   const [isPrivate, setIsPrivate] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
-  const busy = step === "uploading" || step === "storing";
+  const busy = step === "encrypting" || step === "uploading" || step === "storing";
 
   const submit = async () => {
     if (!file) return toast.error("Choose a file");
@@ -101,7 +101,13 @@ function VaultInner() {
 
         <Button onClick={submit} disabled={busy || !file} className="w-full bg-[#FBCB0A] text-[#0B0C10] font-semibold gap-2">
           {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-          {step === "uploading" ? "Uploading to IPFS…" : step === "storing" ? "Storing onchain…" : "Upload"}
+          {step === "encrypting"
+            ? "Encrypting…"
+            : step === "uploading"
+              ? "Uploading to IPFS…"
+              : step === "storing"
+                ? "Storing onchain…"
+                : "Upload"}
         </Button>
       </div>
 
@@ -115,14 +121,24 @@ function VaultInner() {
               <div key={m.seq} className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-[rgba(255,255,255,0.02)]">
                 <FileText className="w-4 h-4 text-[#FBCB0A]" />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">{m.label}</div>
+                  <div className="text-sm font-medium truncate flex items-center gap-1.5">
+                    {m.visibility === "private" && <Lock className="w-3 h-3 text-[#FBCB0A]" />}
+                    {m.label}
+                  </div>
                   <div className="text-xs text-[#A7B0C8]">
                     {m.dataType} · {(m.size / 1024).toFixed(1)} KB · {m.visibility}
                   </div>
                 </div>
-                <a href={m.url} target="_blank" rel="noreferrer">
+                <button
+                  title={m.visibility === "private" ? "Decrypt & open" : "Open"}
+                  onClick={() =>
+                    openMemory(m).catch((e) =>
+                      toast.error(e instanceof Error ? e.message : "Could not open"),
+                    )
+                  }
+                >
                   <ExternalLink className="w-4 h-4 text-[#A7B0C8] hover:text-[#FBCB0A]" />
-                </a>
+                </button>
               </div>
             ))}
           </div>

@@ -168,7 +168,7 @@ export default function Section5Network() {
           <div className="relative w-[280px] h-[280px] md:w-[360px] md:h-[360px]">
             {/* Center ghost (static, uncontained) */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-              <img src="/images/ghost-mascot.png" alt="GhostPay" className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-[0_0_20px_rgba(179,71,255,0.4)]" />
+              <img src="/images/ghost-mascot.png" alt="GhostPay" className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-[0_0_20px_rgba(251,203,10,0.4)]" />
             </div>
 
             {/* Orbit container (spins on scroll) */}

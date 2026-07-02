@@ -166,7 +166,7 @@ export default function Section1Hero() {
     return () => ctx.revert();
   }, []);
 
-  const titleWords = 'Your money. One whisper away.'.split(' ');
+  const titleWords = 'Pay-as-you-go AI. On Celo.'.split(' ');
 
   return (
     <section
@@ -192,7 +192,7 @@ export default function Section1Hero() {
           transform: 'rotateY(12deg)',
         }}
       >
-        <Zap className="w-6 h-6 text-[#B347FF]" strokeWidth={1.5} />
+        <Zap className="w-6 h-6 text-[#FBCB0A]" strokeWidth={1.5} />
         <span className="font-heading text-lg font-medium text-[#F4F6FF]">Instant</span>
         <span className="text-sm text-[#A7B0C8]">Sub-second settlements worldwide</span>
       </div>
@@ -209,7 +209,7 @@ export default function Section1Hero() {
           transform: 'rotateY(-12deg)',
         }}
       >
-        <Lock className="w-6 h-6 text-[#B347FF]" strokeWidth={1.5} />
+        <Lock className="w-6 h-6 text-[#FBCB0A]" strokeWidth={1.5} />
         <span className="font-heading text-lg font-medium text-[#F4F6FF]">Encrypted</span>
         <span className="text-sm text-[#A7B0C8]">End-to-end zero-knowledge security</span>
       </div>
@@ -226,7 +226,7 @@ export default function Section1Hero() {
           transform: 'rotateX(10deg)',
         }}
       >
-        <Calendar className="w-6 h-6 text-[#B347FF]" strokeWidth={1.5} />
+        <Calendar className="w-6 h-6 text-[#FBCB0A]" strokeWidth={1.5} />
         <span className="font-heading text-lg font-medium text-[#F4F6FF]">Scheduled</span>
         <span className="text-sm text-[#A7B0C8]">Automate recurring payments</span>
       </div>
@@ -260,7 +260,7 @@ export default function Section1Hero() {
             ref={labelRef}
             className="micro-label absolute top-6 left-6 opacity-0"
           >
-            AI-PAYMENT LAYER
+            BUILT FOR MINIPAY
           </span>
 
           {/* Ghost Mascot - left side */}
@@ -269,7 +269,7 @@ export default function Section1Hero() {
             className="absolute left-[4%] md:left-[6%] top-1/2 -translate-y-1/2 w-[38%] md:w-[34%] opacity-0"
             style={{ transformStyle: 'preserve-3d' }}
           >
-            <GhostMascot className="w-full h-auto drop-shadow-[0_0_30px_rgba(179,71,255,0.3)]" />
+            <GhostMascot className="w-full h-auto drop-shadow-[0_0_30px_rgba(251,203,10,0.3)]" />
           </div>
 
           {/* Content - right side */}
@@ -289,13 +289,13 @@ export default function Section1Hero() {
               ref={bodyRef}
               className="text-sm md:text-base text-[#A7B0C8] leading-relaxed mb-6 md:mb-8 opacity-0"
             >
-              GhostPay is the invisible agent bank. Send, receive, and schedule payments without opening an app.
+              Your onchain AI agent on Celo. Pay per LLM call in cUSD/USDC — no subscription. Send stablecoins and store data, right inside MiniPay.
             </p>
 
             <button
               ref={ctaRef}
               onClick={() => router.push('/dashboard')}
-              className="px-6 md:px-8 py-3 md:py-3.5 rounded-full bg-[#B347FF] text-[#0B0C10] font-heading font-semibold text-sm md:text-base hover:scale-105 hover:shadow-[0_0_30px_rgba(179,71,255,0.4)] transition-all duration-300 opacity-0"
+              className="px-6 md:px-8 py-3 md:py-3.5 rounded-full bg-[#FBCB0A] text-[#0B0C10] font-heading font-semibold text-sm md:text-base hover:scale-105 hover:shadow-[0_0_30px_rgba(251,203,10,0.4)] transition-all duration-300 opacity-0"
             >
               Summon GhostPay
             </button>

@@ -122,17 +122,17 @@ export default function Section7Pricing() {
               <div
                 className={`p-6 md:p-8 h-full flex flex-col relative rounded-3xl transition-all duration-300 ${
                   plan.highlighted
-                    ? 'glass-card border border-[#B347FF]/30 bg-[rgba(18,15,28,0.8)] shadow-[0_0_40px_rgba(179,71,255,0.15)] z-10'
+                    ? 'glass-card border border-[#FBCB0A]/30 bg-[rgba(18,15,28,0.8)] shadow-[0_0_40px_rgba(251,203,10,0.15)] z-10'
                     : 'border border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.04)]'
                 }`}
               >
                 {plan.highlighted && (
-                  <div className="absolute inset-0 bg-gradient-to-b from-[#B347FF]/10 to-transparent rounded-3xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#FBCB0A]/10 to-transparent rounded-3xl pointer-events-none" />
                 )}
                 {/* Plan header */}
                 <div className="mb-6">
                   {plan.highlighted && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[rgba(179,71,255,0.15)] text-[#B347FF] text-xs font-medium mb-4">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[rgba(251,203,10,0.15)] text-[#FBCB0A] text-xs font-medium mb-4">
                       <Sparkles className="w-3 h-3" />
                       Most Popular
                     </span>
@@ -155,7 +155,7 @@ export default function Section7Pricing() {
                 <ul className="flex-1 space-y-3 mb-8">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-3">
-                      <Check className="w-4 h-4 text-[#B347FF] mt-0.5 flex-shrink-0" strokeWidth={2} />
+                      <Check className="w-4 h-4 text-[#FBCB0A] mt-0.5 flex-shrink-0" strokeWidth={2} />
                       <span className="text-sm text-[#A7B0C8]">{feature}</span>
                     </li>
                   ))}
@@ -165,8 +165,8 @@ export default function Section7Pricing() {
                 <button
                   className={`w-full py-3 rounded-full font-heading font-semibold text-sm transition-all duration-300 ${
                     plan.highlighted
-                      ? 'bg-[#B347FF] text-[#0B0C10] hover:scale-105 hover:shadow-[0_0_30px_rgba(179,71,255,0.4)]'
-                      : 'bg-[rgba(255,255,255,0.05)] text-[#F4F6FF] hover:bg-[rgba(179,71,255,0.2)] hover:text-[#B347FF]'
+                      ? 'bg-[#FBCB0A] text-[#0B0C10] hover:scale-105 hover:shadow-[0_0_30px_rgba(251,203,10,0.4)]'
+                      : 'bg-[rgba(255,255,255,0.05)] text-[#F4F6FF] hover:bg-[rgba(251,203,10,0.2)] hover:text-[#FBCB0A]'
                   }`}
                 >
                   {plan.cta}
