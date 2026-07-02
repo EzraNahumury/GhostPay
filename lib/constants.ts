@@ -37,7 +37,7 @@ export const USDT_ADDRESS = "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e";
  * Note: the CELO ERC-20 does NOT support EIP-2612 permit, so CELO uses the
  * approve path only (the chat/payments flows already do).
  */
-export const CELO_ADDRESS = "0x471ECE3750Da237f93B8E339c536989b8978a438";
+export const CELO_ADDRESS = "0x471EcE3750Da237f93B8E339c536989b8978a438";
 
 export interface TokenInfo {
   symbol: string;
