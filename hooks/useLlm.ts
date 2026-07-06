@@ -12,8 +12,8 @@ export interface LlmModel {
   label: string;
 }
 
-/** Flat GhostPay fee per call (in stablecoin units, USD-ish). Models are free. */
-export const CALL_PRICE = 0.01;
+/** Flat GhostPay fee per call (in token units). Models are free. */
+export const CALL_PRICE = 0.001;
 
 /** Fallback list if the provider's /models can't be reached. */
 export const FALLBACK_MODELS: LlmModel[] = [
