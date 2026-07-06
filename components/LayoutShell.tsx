@@ -92,7 +92,8 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
           >
             <div className="flex h-full flex-col">
               <div className="flex h-16 items-center justify-between px-6 border-b border-[rgba(255,255,255,0.05)]">
-                <Link href="/dashboard" className="font-heading font-semibold">
+                <Link href="/dashboard" className="flex items-center gap-2 font-heading font-semibold">
+                  <img src="/logo.jpg" alt="GhostPay" className="h-6 w-6 rounded-md object-contain bg-black" />
                   Ghost<span className="text-[#FBCB0A]">Pay</span>
                 </Link>
                 <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
@@ -138,7 +139,8 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
         <div className={cn("flex h-16 items-center", sidebarOpen ? "px-6 justify-between" : "px-4 justify-center")}>
           {sidebarOpen ? (
             <>
-              <Link href="/dashboard" className="font-heading font-semibold">
+              <Link href="/dashboard" className="flex items-center gap-2 font-heading font-semibold">
+                <img src="/logo.jpg" alt="GhostPay" className="h-6 w-6 rounded-md object-contain bg-black" />
                 Ghost<span className="text-[#FBCB0A]">Pay</span>
               </Link>
               <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="text-[#A7B0C8]">
@@ -187,7 +189,8 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
             <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(true)}>
               <Menu className="w-5 h-5" />
             </Button>
-            <Link href="/dashboard" className="font-heading font-semibold text-sm">
+            <Link href="/dashboard" className="flex items-center gap-2 font-heading font-semibold text-sm">
+              <img src="/logo.jpg" alt="GhostPay" className="h-6 w-6 rounded-md object-contain bg-black" />
               Ghost<span className="text-[#FBCB0A]">Pay</span>
             </Link>
           </div>

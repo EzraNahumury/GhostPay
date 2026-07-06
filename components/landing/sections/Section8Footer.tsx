@@ -153,9 +153,7 @@ export default function Section8Footer() {
           {/* Brand & Copyright (Left) */}
           <div className="footer-col flex flex-col justify-start max-w-[300px]">
             <a href="#" className="font-heading text-xl font-bold text-[#F4F6FF] mb-6 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-black text-lg">
-                G
-              </span>
+              <img src="/logo.jpg" alt="GhostPay" className="w-8 h-8 rounded-lg object-contain bg-black" />
               GhostPay
             </a>
             <p className="text-sm text-[#A7B0C8] font-medium opacity-70">

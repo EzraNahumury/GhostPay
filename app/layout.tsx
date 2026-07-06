@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   description:
     "Your onchain AI agent on Celo. Pay per LLM call in cUSD — no subscription. Built for MiniPay.",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/logo.jpg" }],
+    shortcut: ["/logo.jpg"],
+    apple: [{ url: "/logo.jpg" }],
+  },
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "GhostPay" },
 };
 

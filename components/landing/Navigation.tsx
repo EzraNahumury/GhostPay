@@ -51,7 +51,8 @@ export default function Navigation() {
       >
         <div className="flex items-center justify-between px-6 md:px-12 py-5 max-w-[1920px] mx-auto">
           {/* Logo */}
-          <a href="#" className="font-heading text-xl font-semibold tracking-tight text-[#F4F6FF]">
+          <a href="#" className="flex items-center gap-2 font-heading text-xl font-semibold tracking-tight text-[#F4F6FF]">
+            <img src="/logo.jpg" alt="GhostPay" className="h-8 w-8 rounded-md object-contain bg-black" />
             Ghost<span className="text-[#FBCB0A]">Pay</span>
           </a>
 
