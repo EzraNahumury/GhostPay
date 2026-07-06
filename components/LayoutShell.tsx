@@ -13,13 +13,12 @@ import {
   ChevronRight,
   Menu,
   X,
-  LogOut,
   WifiOff,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useCustomWallet } from "@/contexts/CustomWallet";
 import { motion, AnimatePresence } from "framer-motion";
 import { DemoErrorBoundary, useNetworkStatus } from "@/lib/demoProof";
@@ -38,14 +37,9 @@ const sidebarVariants = {
   collapsed: { width: 64 },
 };
 
-function short(addr?: string) {
-  return addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "";
-}
-
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isConnected, address, connectWallet, logout, isMiniPayWallet, correctChain, ensureCorrectChain } =
-    useCustomWallet();
+  const { isConnected, isMiniPayWallet } = useCustomWallet();
   const { online } = useNetworkStatus();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -57,41 +51,18 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   const WalletButton = () =>
     !mounted ? (
       <div className="h-9 w-28" />
-    ) : isConnected ? (
-      <Popover>
-        <PopoverTrigger asChild>
-          <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[rgba(255,255,255,0.05)] text-sm text-[#F4F6FF] hover:bg-[rgba(255,255,255,0.08)]">
-            <span className="w-2 h-2 rounded-full bg-[#35D07F]" />
-            <span className="font-mono text-xs">{short(address)}</span>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent align="end" sideOffset={8} className="w-56 bg-[#0B0C10] border border-[rgba(255,255,255,0.05)] p-2">
-          {!correctChain && (
-            <Button variant="ghost" className="w-full justify-start text-[#FBCB0A] hover:bg-[rgba(255,255,255,0.05)]" onClick={ensureCorrectChain}>
-              Switch to Celo
-            </Button>
-          )}
-          <Button variant="ghost" className="w-full justify-start text-left text-[#F4F6FF] hover:bg-[rgba(255,255,255,0.05)]" onClick={logout}>
-            <LogOut className="w-4 h-4 mr-2 text-[#A7B0C8]" />
-            Disconnect
-          </Button>
-        </PopoverContent>
-      </Popover>
-    ) : isMiniPayWallet ? (
-      // Inside MiniPay the wallet is injected + auto-connected — no manual button.
+    ) : isMiniPayWallet && !isConnected ? (
+      // Inside MiniPay the injected wallet auto-connects — no manual button.
       <span className="flex items-center gap-2 px-3 py-1.5 text-xs text-[#A7B0C8]">
         <span className="w-2 h-2 rounded-full bg-[#FBCB0A] animate-pulse" />
         Connecting MiniPay…
       </span>
     ) : (
-      <Button
-        onClick={connectWallet}
-        size="sm"
-        className="gap-2 bg-[#FBCB0A] text-[#0B0C10] hover:brightness-110 transition rounded-full font-semibold px-5"
-      >
-        <Wallet className="w-4 h-4" />
-        Connect Wallet
-      </Button>
+      <ConnectButton
+        showBalance={false}
+        chainStatus="icon"
+        accountStatus={{ smallScreen: "avatar", largeScreen: "full" }}
+      />
     );
 
   return (
@@ -223,15 +194,6 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
           <div className="flex-1" />
           <WalletButton />
         </header>
-
-        {mounted && isConnected && !correctChain && (
-          <div className="flex items-center justify-center gap-2 px-4 py-2 bg-[#FBCB0A]/90 text-[#0B0C10] text-sm font-medium">
-            Wrong network.
-            <button className="underline" onClick={ensureCorrectChain}>
-              Switch to Celo
-            </button>
-          </div>
-        )}
 
         {!online && (
           <div className="flex items-center justify-center gap-2 px-4 py-2 bg-destructive/90 text-destructive-foreground text-sm font-medium">

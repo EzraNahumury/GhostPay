@@ -1,11 +1,10 @@
-import { http, createConfig, createStorage } from "wagmi";
+import { http } from "wagmi";
 import { celo } from "wagmi/chains";
 import { defineChain } from "viem";
-import { injected } from "wagmi/connectors";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 
 /**
  * Celo Sepolia testnet — defined manually to avoid viem version drift.
- * Faucet: CELO + test USDC/EURC from the Celo faucet.
  */
 export const celoSepolia = defineChain({
   id: 11142220,
@@ -24,22 +23,18 @@ const defaultChainName = process.env.NEXT_PUBLIC_CELO_NETWORK ?? "celo";
 export const activeChain = defaultChainName === "celoSepolia" ? celoSepolia : celo;
 
 /**
- * wagmi config.
+ * wagmi + RainbowKit config.
  *
- * MiniPay note: MiniPay injects an EIP-1193 provider (`window.ethereum`) and
- * marks it with `isMiniPay === true`. The `injected` connector auto-detects it.
- * Inside MiniPay we auto-connect and hide every other wallet option; outside
- * MiniPay the same injected connector works with any browser wallet.
+ * RainbowKit's getDefaultConfig bundles injected + WalletConnect + Coinbase etc.
+ * MiniPay injects `window.ethereum` (isMiniPay=true) and is picked up by the
+ * injected connector — auto-connected in CustomWalletProvider. WalletConnect
+ * (for external mobile wallets) needs a projectId from https://cloud.reown.com;
+ * injected/MiniPay works without it.
  */
-export const wagmiConfig = createConfig({
+export const wagmiConfig = getDefaultConfig({
+  appName: "GhostPay",
+  projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || "ghostpay_dev_placeholder",
   chains: [celo, celoSepolia],
-  connectors: [
-    injected({ shimDisconnect: true }),
-  ],
-  storage: createStorage({
-    storage: typeof window !== "undefined" ? window.localStorage : undefined,
-    key: "ghostpay.wagmi",
-  }),
   transports: {
     [celo.id]: http(process.env.NEXT_PUBLIC_CELO_RPC_URL ?? "https://forno.celo.org"),
     [celoSepolia.id]: http(

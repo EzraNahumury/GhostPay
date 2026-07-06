@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Ghost, Wallet, Loader2 } from "lucide-react";
+import { Ghost, Loader2 } from "lucide-react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useCustomWallet } from "@/contexts/CustomWallet";
 import { useAgent } from "@/hooks/useAgent";
 import { CONTRACTS_DEPLOYED } from "@/lib/constants";
@@ -14,7 +15,7 @@ import { toast } from "sonner";
  * Renders a friendly connect / create flow otherwise.
  */
 export default function AgentGate({ children }: { children: React.ReactNode }) {
-  const { isConnected, connectWallet, isMiniPayWallet } = useCustomWallet();
+  const { isConnected, isMiniPayWallet } = useCustomWallet();
   const { hasAgent, isPending, createAgent } = useAgent();
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -43,11 +44,7 @@ export default function AgentGate({ children }: { children: React.ReactNode }) {
             : "Connect a Celo wallet (MiniPay, Valora, or any injected wallet) to continue."}
         </p>
         {/* No manual button inside MiniPay — the injected wallet auto-connects. */}
-        {!isMiniPayWallet && (
-          <Button onClick={connectWallet} className="gap-2 bg-[#FBCB0A] text-[#0B0C10] font-semibold rounded-full px-6">
-            <Wallet className="w-4 h-4" /> Connect Wallet
-          </Button>
-        )}
+        {!isMiniPayWallet && <ConnectButton showBalance={false} />}
       </Center>
     );
   }
