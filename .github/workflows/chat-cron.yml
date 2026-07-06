@@ -1,0 +1,64 @@
+name: chat-cron
+
+# On-chain AI-chat activity: each run mints fresh wallets that each pay for one
+# LlmMeter call (0.001 CELO) on Celo mainnet. See packages/hardhat/scripts/chat-cron.ts.
+#
+# Requires repo secret PRIVATE_KEY = the main funding wallet's key.
+#   Settings → Secrets and variables → Actions → New repository secret
+# Optional secret CELO_RPC_URL (defaults to https://forno.celo.org).
+
+on:
+  # Manual "Run workflow" button. First run defaults to DRY_RUN (no spend).
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (no transactions, just print the plan + budget)"
+        type: boolean
+        default: true
+      wallets_min:
+        description: "Min fresh wallets this cycle"
+        type: string
+        default: "27"
+      wallets_max:
+        description: "Max fresh wallets this cycle"
+        type: string
+        default: "48"
+
+  # 4x/day automatic schedule. Times are UTC — 00/06/12/18 WIB (+07:00) = 17/23/05/11 UTC.
+  # COMMENTED OUT until you've tested manually. Uncomment to arm; it then spends
+  # real CELO 4x/day with no further action.
+  # schedule:
+  #   - cron: "0 17 * * *"   # 00:00 WIB
+  #   - cron: "0 23 * * *"   # 06:00 WIB
+  #   - cron: "0 5 * * *"    # 12:00 WIB
+  #   - cron: "0 11 * * *"   # 18:00 WIB
+
+# Never run two cycles at once (nonce clashes on the main wallet).
+concurrency:
+  group: chat-cron
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    name: One chat-cron cycle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/hardhat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: packages/hardhat/package-lock.json
+      - run: npm ci
+      - name: Run chat-cron cycle
+        run: npx hardhat run scripts/chat-cron.ts --network celo
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          CELO_RPC_URL: ${{ secrets.CELO_RPC_URL }}
+          # Scheduled runs have no inputs → fall back to the script's own defaults.
+          DRY_RUN: ${{ inputs.dry_run == true && '1' || '0' }}
+          WALLETS_MIN: ${{ inputs.wallets_min || '27' }}
+          WALLETS_MAX: ${{ inputs.wallets_max || '48' }}

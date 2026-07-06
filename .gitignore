@@ -28,6 +28,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# chat-cron run logs
+packages/hardhat/logs/
+
 # local env files
 .env*.local
 .env
