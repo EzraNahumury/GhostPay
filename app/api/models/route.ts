@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { OLLAMA_FREE_MODELS } from "@/lib/llmFree";
 
 /**
  * GET /api/models — list the free models from the configured OpenAI-compatible
@@ -29,6 +30,17 @@ export async function GET() {
     }
     const json = await res.json();
     const all: ProviderModel[] = json.data ?? [];
+
+    // Ollama Cloud: /v1/models has no free/paid flag → filter to the verified
+    // free-tier allowlist so users can't pick a subscription-only model.
+    if (base.includes("ollama")) {
+      const freeSet = new Set(OLLAMA_FREE_MODELS);
+      const models = all
+        .filter((m) => freeSet.has(m.id))
+        .map((m) => ({ id: m.id, label: m.id }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+      return NextResponse.json({ models });
+    }
 
     const isFree = (m: ProviderModel) => {
       const p = m.pricing;

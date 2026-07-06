@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { serverPublicClient, getOperatorWallet } from "@/lib/serverChain";
 import { LlmMeterAbi } from "@/lib/abis";
+import { OLLAMA_FALLBACKS } from "@/lib/llmFree";
 
 /**
  * POST /api/llm — pay-as-you-go LLM proxy.
@@ -55,14 +56,21 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Verify escrow is Pending on-chain ────────────────────────────────────
+  // The client pays first, then calls this immediately. The server's RPC node
+  // may lag a beat behind the block that mined the escrow, so poll isPending a
+  // few times before giving up (avoids a false "no escrow" right after payment).
   let pending = false;
   try {
-    pending = (await serverPublicClient.readContract({
-      address: LLM_METER,
-      abi: LlmMeterAbi,
-      functionName: "isPending",
-      args: [requestId as `0x${string}`],
-    })) as boolean;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      pending = (await serverPublicClient.readContract({
+        address: LLM_METER,
+        abi: LlmMeterAbi,
+        functionName: "isPending",
+        args: [requestId as `0x${string}`],
+      })) as boolean;
+      if (pending) break;
+      await new Promise((r) => setTimeout(r, 1500));
+    }
   } catch (e) {
     return NextResponse.json(
       { error: `Payment check failed: ${e instanceof Error ? e.message : "rpc error"}` },
@@ -71,7 +79,7 @@ export async function POST(req: NextRequest) {
   }
   if (!pending) {
     return NextResponse.json(
-      { error: "No pending escrow found for this requestId" },
+      { error: "No pending escrow found for this requestId (payment not seen yet)" },
       { status: 402 },
     );
   }
@@ -98,9 +106,9 @@ export async function POST(req: NextRequest) {
   // Free models are shared and frequently rate-limited (429). Rather than fail,
   // try the requested model then a few diverse free backups, fast, and return
   // the first that yields real content. The escrow paid covers whichever serves.
-  // OpenRouter free models 429 a lot, so we keep a diverse backup list for it.
-  // Other providers (Ollama, Groq) use only the requested model.
+  // Provider-specific fallbacks (used when the requested model is busy/gated).
   const isOpenRouter = apiBase.includes("openrouter");
+  const isOllama = apiBase.includes("ollama");
   const backups = isOpenRouter
     ? [
         "meta-llama/llama-3.3-70b-instruct:free",
@@ -109,7 +117,9 @@ export async function POST(req: NextRequest) {
         "openai/gpt-oss-20b:free",
         "nvidia/nemotron-nano-9b-v2:free",
       ]
-    : [];
+    : isOllama
+      ? OLLAMA_FALLBACKS
+      : [];
   const requested = model ?? backups[0] ?? "";
   const candidates = [requested, ...backups.filter((b) => b !== requested)]
     .filter(Boolean)
