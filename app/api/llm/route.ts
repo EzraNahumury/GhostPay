@@ -98,15 +98,30 @@ export async function POST(req: NextRequest) {
   // Free models are shared and frequently rate-limited (429). Rather than fail,
   // try the requested model then a few diverse free backups, fast, and return
   // the first that yields real content. The escrow paid covers whichever serves.
-  const requested = model ?? "meta-llama/llama-3.3-70b-instruct:free";
-  const backups = [
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "google/gemma-4-31b-it:free",
-    "qwen/qwen3-next-80b-a3b-instruct:free",
-    "openai/gpt-oss-20b:free",
-    "nvidia/nemotron-nano-9b-v2:free",
-  ];
-  const candidates = [requested, ...backups.filter((b) => b !== requested)].slice(0, 4);
+  // OpenRouter free models 429 a lot, so we keep a diverse backup list for it.
+  // Other providers (Ollama, Groq) use only the requested model.
+  const isOpenRouter = apiBase.includes("openrouter");
+  const backups = isOpenRouter
+    ? [
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "google/gemma-4-31b-it:free",
+        "qwen/qwen3-next-80b-a3b-instruct:free",
+        "openai/gpt-oss-20b:free",
+        "nvidia/nemotron-nano-9b-v2:free",
+      ]
+    : [];
+  const requested = model ?? backups[0] ?? "";
+  const candidates = [requested, ...backups.filter((b) => b !== requested)]
+    .filter(Boolean)
+    .slice(0, 4);
+
+  if (candidates.length === 0) {
+    await finalize("refund");
+    return NextResponse.json(
+      { error: "No model specified", refunded: Boolean(operator) },
+      { status: 400 },
+    );
+  }
 
   const callModel = (m: string) =>
     fetch(`${apiBase}/chat/completions`, {
