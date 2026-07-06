@@ -33,6 +33,10 @@ export const metadata: Metadata = {
     apple: [{ url: "/logo.jpg" }],
   },
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "GhostPay" },
+  other: {
+    "talentapp:project_verification":
+      "e519a0b1272d6096eae1536665938bc601038c2ecd0d197eb4559ba24a1493f0a10ecf7f5274ad0860a42be9710f760a07e7c0d015f41063d3ff81ce7ba5c4d2",
+  },
 };
 
 export const viewport: Viewport = {
