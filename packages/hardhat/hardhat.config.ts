@@ -19,13 +19,15 @@ const config: HardhatUserConfig = {
   networks: {
     // Celo mainnet — required for Proof of Ship eligibility.
     celo: {
-      url: process.env.CELO_RPC_URL ?? "https://forno.celo.org",
+      // `||` (not `??`) so an EMPTY env var (e.g. an unset CI secret passed as "")
+      // still falls back to the public RPC instead of becoming an empty URL.
+      url: process.env.CELO_RPC_URL || "https://forno.celo.org",
       chainId: 42220,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     // Celo Sepolia testnet (faucet: CELO + test USDC/EURC).
     celoSepolia: {
-      url: process.env.CELO_SEPOLIA_RPC_URL ?? "https://forno.celo-sepolia.celo-testnet.org",
+      url: process.env.CELO_SEPOLIA_RPC_URL || "https://forno.celo-sepolia.celo-testnet.org",
       chainId: 11142220,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
