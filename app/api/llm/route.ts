@@ -96,17 +96,27 @@ export async function POST(req: NextRequest) {
 
   // ── Call the LLM (OpenAI-compatible) ─────────────────────────────────────
   try {
-    const res = await fetch(`${apiBase}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-        // OpenRouter attribution headers (ignored by other providers)
-        "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "https://github.com/EzraNahumury/GhostPay",
-        "X-Title": "GhostPay",
-      },
-      body: JSON.stringify({ model: model ?? "meta-llama/llama-3.3-70b-instruct:free", messages }),
-    });
+    // Free models are shared and can be transiently rate-limited (429/503) —
+    // retry a couple of times with a short backoff before giving up + refunding.
+    const doCall = () =>
+      fetch(`${apiBase}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+          "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "https://github.com/EzraNahumury/GhostPay",
+          "X-Title": "GhostPay",
+        },
+        body: JSON.stringify({ model: model ?? "meta-llama/llama-3.3-70b-instruct:free", messages }),
+      });
+
+    let res = await doCall();
+    for (let attempt = 0; attempt < 2 && (res.status === 429 || res.status === 503); attempt++) {
+      const wait = Number(res.headers.get("retry-after")) || 2;
+      await new Promise((r) => setTimeout(r, Math.min(wait, 4) * 1000));
+      res = await doCall();
+    }
+
     if (!res.ok) {
       const text = await res.text();
       await finalize("refund"); // charge nothing for a failed call
