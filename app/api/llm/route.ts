@@ -94,41 +94,67 @@ export async function POST(req: NextRequest) {
     }
   };
 
-  // ── Call the LLM (OpenAI-compatible) ─────────────────────────────────────
+  // ── Call the LLM with multi-model fallback ───────────────────────────────
+  // Free models are shared and frequently rate-limited (429). Rather than fail,
+  // try the requested model then a few diverse free backups, fast, and return
+  // the first that yields real content. The escrow paid covers whichever serves.
+  const requested = model ?? "meta-llama/llama-3.3-70b-instruct:free";
+  const backups = [
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "google/gemma-4-31b-it:free",
+    "qwen/qwen3-next-80b-a3b-instruct:free",
+    "openai/gpt-oss-20b:free",
+    "nvidia/nemotron-nano-9b-v2:free",
+  ];
+  const candidates = [requested, ...backups.filter((b) => b !== requested)].slice(0, 4);
+
+  const callModel = (m: string) =>
+    fetch(`${apiBase}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "https://github.com/EzraNahumury/GhostPay",
+        "X-Title": "GhostPay",
+      },
+      body: JSON.stringify({ model: m, messages }),
+    });
+
+  let lastErr = "all free models are busy (rate-limited). Try again, or add credit at openrouter.ai.";
   try {
-    // Free models are shared and can be transiently rate-limited (429/503) —
-    // retry a couple of times with a short backoff before giving up + refunding.
-    const doCall = () =>
-      fetch(`${apiBase}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-          "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "https://github.com/EzraNahumury/GhostPay",
-          "X-Title": "GhostPay",
-        },
-        body: JSON.stringify({ model: model ?? "meta-llama/llama-3.3-70b-instruct:free", messages }),
-      });
-
-    let res = await doCall();
-    for (let attempt = 0; attempt < 2 && (res.status === 429 || res.status === 503); attempt++) {
-      const wait = Number(res.headers.get("retry-after")) || 2;
-      await new Promise((r) => setTimeout(r, Math.min(wait, 4) * 1000));
-      res = await doCall();
+    for (const m of candidates) {
+      let res: Response;
+      try {
+        res = await callModel(m);
+      } catch (e) {
+        lastErr = e instanceof Error ? e.message : "request failed";
+        continue;
+      }
+      if (res.status === 429 || res.status === 503) {
+        lastErr = `${m}: rate-limited`;
+        continue; // try next model
+      }
+      if (!res.ok) {
+        lastErr = `${m}: ${(await res.text()).slice(0, 120)}`;
+        continue;
+      }
+      const json = await res.json();
+      const msg = json.choices?.[0]?.message;
+      const content = (msg?.content && msg.content.trim()) || (msg?.reasoning && msg.reasoning.trim());
+      if (!content) {
+        lastErr = `${m}: empty response`;
+        continue;
+      }
+      await finalize("settle"); // release escrow only on a real answer
+      return NextResponse.json({ content, model: json.model ?? m, usage: json.usage ?? null });
     }
 
-    if (!res.ok) {
-      const text = await res.text();
-      await finalize("refund"); // charge nothing for a failed call
-      return NextResponse.json(
-        { error: `LLM error: ${text.slice(0, 200)}`, refunded: Boolean(operator) },
-        { status: 502 },
-      );
-    }
-    const json = await res.json();
-    const content = json.choices?.[0]?.message?.content ?? "";
-    await finalize("settle"); // release escrow to treasury only on success
-    return NextResponse.json({ content, usage: json.usage ?? null });
+    // Nothing worked → refund.
+    await finalize("refund");
+    return NextResponse.json(
+      { error: `LLM unavailable: ${lastErr}`, refunded: Boolean(operator) },
+      { status: 502 },
+    );
   } catch (e) {
     await finalize("refund");
     return NextResponse.json(

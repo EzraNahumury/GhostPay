@@ -32,7 +32,8 @@ export async function GET() {
 
     const isFree = (m: ProviderModel) => {
       const p = m.pricing;
-      if (!p) return false;
+      // Providers without pricing info (e.g. Groq) expose a free tier → include.
+      if (!p) return true;
       // free = prompt/completion/request/image all zero
       return ["prompt", "completion", "request", "image"].every(
         (k) => p[k] === undefined || Number(p[k]) === 0,
