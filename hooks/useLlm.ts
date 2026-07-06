@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAccount, usePublicClient, useReadContract } from "wagmi";
 import { parseUnits, keccak256, toHex } from "viem";
 import { llmMeter, erc20Abi } from "@/lib/contracts";
@@ -10,14 +10,15 @@ import { useCustomWallet } from "@/contexts/CustomWallet";
 export interface LlmModel {
   id: string;
   label: string;
-  /** Price per call in USD (converted to the chosen token's decimals). */
-  price: number;
 }
 
-/** Available models and their per-call price (in USD ≈ 1 stablecoin unit). */
-export const LLM_MODELS: LlmModel[] = [
-  { id: "gpt-4o-mini", label: "GPT-4o mini (fast, cheap)", price: 0.01 },
-  { id: "gpt-4o", label: "GPT-4o (smart)", price: 0.05 },
+/** Flat GhostPay fee per call (in stablecoin units, USD-ish). Models are free. */
+export const CALL_PRICE = 0.01;
+
+/** Fallback list if the provider's /models can't be reached. */
+export const FALLBACK_MODELS: LlmModel[] = [
+  { id: "meta-llama/llama-3.3-70b-instruct:free", label: "Llama 3.3 70B" },
+  { id: "google/gemini-2.0-flash-exp:free", label: "Gemini 2.0 Flash" },
 ];
 
 export type LlmStep = "idle" | "paying" | "generating" | "done" | "error";
@@ -35,7 +36,8 @@ function randomRequestId(): `0x${string}` {
 
 /**
  * Pay-as-you-go LLM: each call escrows the chosen stablecoin on-chain via
- * LlmMeter; the backend settles on success or refunds on failure.
+ * LlmMeter; the backend settles on success or refunds on failure. Model list is
+ * fetched live from the provider (free models only).
  */
 export function useLlm(agentId: bigint | undefined) {
   const { address } = useAccount();
@@ -46,8 +48,25 @@ export function useLlm(agentId: bigint | undefined) {
   const [error, setError] = useState<string | null>(null);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
   const [refundable, setRefundable] = useState<`0x${string}` | null>(null);
+  const [models, setModels] = useState<LlmModel[]>(FALLBACK_MODELS);
+  const [modelsLoading, setModelsLoading] = useState(true);
 
-  // Number of settled calls for this agent (multi-token → count, not a sum).
+  // Load free models from the provider.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/models")
+      .then((r) => r.json())
+      .then((j) => {
+        if (cancelled) return;
+        if (Array.isArray(j.models) && j.models.length > 0) setModels(j.models);
+      })
+      .catch(() => {})
+      .finally(() => !cancelled && setModelsLoading(false));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const { data: callsRaw, refetch: refetchCalls } = useReadContract({
     ...llmMeter,
     functionName: "callsByAgent",
@@ -66,7 +85,6 @@ export function useLlm(agentId: bigint | undefined) {
         args: [address, llmMeter.address],
       })) as bigint;
       if (allowance < needed) {
-        // Approve a generous allowance once to avoid an approve per call.
         const max = parseUnits("1000000", token.decimals);
         await sendTransaction({
           address: token.address,
@@ -79,15 +97,11 @@ export function useLlm(agentId: bigint | undefined) {
     [address, publicClient, sendTransaction],
   );
 
-  /**
-   * Pay in the chosen token, then fetch the completion.
-   * @returns assistant reply string
-   */
   const ask = useCallback(
     async (model: LlmModel, token: TokenInfo, messages: ChatMessage[]): Promise<string> => {
       if (!agentId) throw new Error("Create an agent first");
       setError(null);
-      const price = parseUnits(model.price.toString(), token.decimals);
+      const price = parseUnits(CALL_PRICE.toString(), token.decimals);
       const requestId = randomRequestId();
 
       try {
@@ -128,10 +142,6 @@ export function useLlm(agentId: bigint | undefined) {
     [agentId, ensureAllowance, sendTransaction, refetchCalls, step],
   );
 
-  /**
-   * Reclaim a stuck escrow for a failed call. Succeeds immediately if the
-   * backend already refunded is skipped; otherwise after REFUND_TIMEOUT (15 min).
-   */
   const selfRefund = useCallback(async () => {
     if (!refundable) return;
     await sendTransaction({
@@ -143,5 +153,16 @@ export function useLlm(agentId: bigint | undefined) {
     setRefundable(null);
   }, [refundable, sendTransaction]);
 
-  return { ask, step, error, lastTxHash, calls, refundable, selfRefund, refetchCalls };
+  return {
+    ask,
+    step,
+    error,
+    lastTxHash,
+    calls,
+    models,
+    modelsLoading,
+    refundable,
+    selfRefund,
+    refetchCalls,
+  };
 }

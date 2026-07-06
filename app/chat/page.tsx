@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LayoutShell from "@/components/LayoutShell";
 import AgentGate from "@/components/AgentGate";
 import { useAgent } from "@/hooks/useAgent";
 import { useBalances } from "@/hooks/useBalances";
-import { useLlm, LLM_MODELS, type ChatMessage, type LlmModel } from "@/hooks/useLlm";
+import { useLlm, CALL_PRICE, type ChatMessage, type LlmModel } from "@/hooks/useLlm";
 import { PAY_TOKENS, explorerTxUrl, type TokenInfo } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Send, Loader2, ExternalLink, Activity } from "lucide-react";
@@ -13,9 +13,9 @@ import { toast } from "sonner";
 
 function ChatInner() {
   const { agentId } = useAgent();
-  const { ask, step, calls, lastTxHash, refundable, selfRefund } = useLlm(agentId);
+  const { ask, step, calls, lastTxHash, refundable, selfRefund, models, modelsLoading } = useLlm(agentId);
   const { bySymbol, celo } = useBalances();
-  const [model, setModel] = useState<LlmModel>(LLM_MODELS[0]);
+  const [model, setModel] = useState<LlmModel | null>(null);
   const [token, setToken] = useState<TokenInfo>(PAY_TOKENS[0]);
   const tokenBal = token.symbol === "CELO" ? celo.formatted : bySymbol(token.symbol)?.formatted ?? 0;
   const [input, setInput] = useState("");
@@ -23,11 +23,16 @@ function ChatInner() {
   const busy = step === "paying" || step === "generating";
   const endRef = useRef<HTMLDivElement>(null);
 
+  // Default to the first free model once the list loads.
+  useEffect(() => {
+    if (!model && models.length > 0) setModel(models[0]);
+  }, [models, model]);
+
   const send = async () => {
     const text = input.trim();
-    if (!text || busy) return;
-    if (tokenBal < model.price) {
-      toast.error(`Not enough ${token.symbol} — need ${model.price}, have ${tokenBal.toFixed(3)}`);
+    if (!text || busy || !model) return;
+    if (tokenBal < CALL_PRICE) {
+      toast.error(`Not enough ${token.symbol} — need ${CALL_PRICE}, have ${tokenBal.toFixed(3)}`);
       return;
     }
     const next: ChatMessage[] = [...messages, { role: "user", content: text }];
@@ -56,21 +61,22 @@ function ChatInner() {
         </div>
       </div>
 
-      {/* Model selector */}
-      <div className="flex gap-2 mb-3 flex-wrap">
-        {LLM_MODELS.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => setModel(m)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-              model.id === m.id
-                ? "bg-[rgba(251,203,10,0.15)] text-[#FBCB0A]"
-                : "bg-[rgba(255,255,255,0.05)] text-[#A7B0C8] hover:text-[#F4F6FF]"
-            }`}
-          >
-            {m.label} · {m.price} {token.symbol}
-          </button>
-        ))}
+      {/* Model selector (free models from OpenRouter) */}
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-[11px] text-[#A7B0C8]">Model:</span>
+        <select
+          value={model?.id ?? ""}
+          onChange={(e) => setModel(models.find((m) => m.id === e.target.value) ?? null)}
+          className="flex-1 min-w-0 rounded-lg bg-[rgba(255,255,255,0.05)] px-3 py-1.5 text-xs text-[#F4F6FF] focus:outline-none"
+        >
+          {modelsLoading && <option>Loading models…</option>}
+          {models.map((m) => (
+            <option key={m.id} value={m.id} className="bg-[#0B0C10]">
+              {m.label}
+            </option>
+          ))}
+        </select>
+        <span className="text-[11px] text-[#A7B0C8] shrink-0">{models.length} free</span>
       </div>
 
       {/* Pay-token selector */}
@@ -119,7 +125,7 @@ function ChatInner() {
         {busy && (
           <div className="flex items-center gap-2 text-xs text-[#A7B0C8]">
             <Loader2 className="w-4 h-4 animate-spin" />
-            {step === "paying" ? `Paying ${model.price} ${token.symbol} onchain…` : "Generating…"}
+            {step === "paying" ? `Paying ${CALL_PRICE} ${token.symbol} onchain…` : "Generating…"}
           </div>
         )}
         <div ref={endRef} />
@@ -128,7 +134,7 @@ function ChatInner() {
       {refundable && (
         <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-[#FBCB0A]/30 bg-[rgba(251,203,10,0.08)] px-4 py-3">
           <span className="text-xs text-[#F4F6FF]">
-            Call failed — your {model.price} {token.symbol} is held in escrow, not spent.
+            Call failed — your {CALL_PRICE} {token.symbol} is held in escrow, not spent.
             The backend refunds automatically; if not, reclaim it here (available after ~15 min).
           </span>
           <Button
@@ -171,12 +177,12 @@ function ChatInner() {
             }
           }}
           rows={1}
-          placeholder={`Message (${model.price} ${token.symbol})`}
+          placeholder={`Message (${CALL_PRICE} ${token.symbol})`}
           className="flex-1 resize-none rounded-xl bg-[rgba(255,255,255,0.05)] px-4 py-3 text-sm text-[#F4F6FF] placeholder:text-[#A7B0C8] focus:outline-none"
         />
         <Button
           onClick={send}
-          disabled={busy || !input.trim()}
+          disabled={busy || !input.trim() || !model}
           className="bg-[#FBCB0A] text-[#0B0C10] font-semibold self-end h-[46px] px-4"
         >
           {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

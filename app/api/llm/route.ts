@@ -98,8 +98,14 @@ export async function POST(req: NextRequest) {
   try {
     const res = await fetch(`${apiBase}/chat/completions`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: model ?? "gpt-4o-mini", messages }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        // OpenRouter attribution headers (ignored by other providers)
+        "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "https://github.com/EzraNahumury/GhostPay",
+        "X-Title": "GhostPay",
+      },
+      body: JSON.stringify({ model: model ?? "meta-llama/llama-3.3-70b-instruct:free", messages }),
     });
     if (!res.ok) {
       const text = await res.text();
