@@ -156,10 +156,11 @@ export default function Section5Network() {
         {/* Title */}
         <div ref={titleRef} className="text-center mb-12 md:mb-16 opacity-0">
           <h2 className="font-heading text-3xl md:text-[42px] font-semibold text-[#F4F6FF] mb-4 tracking-tight">
-            Connected to everything.
+            One agent. Everything onchain.
           </h2>
           <p className="text-base md:text-lg text-[#A7B0C8] max-w-[520px] mx-auto">
-            Banks, cards, wallets, chains. One invisible layer.
+            AI, payments, and private storage — all through one agent on Celo,
+            inside MiniPay.
           </p>
         </div>
 
@@ -220,8 +221,8 @@ export default function Section5Network() {
         {/* Info cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[800px] mx-auto">
           {[
-            { title: 'Multi-chain ready', desc: 'Ethereum, Solana, Bitcoin, and 20+ networks supported natively.' },
-            { title: 'Bank-grade APIs', desc: 'SOC 2 Type II compliant infrastructure with 99.99% uptime SLA.' },
+            { title: 'Built on Celo', desc: 'Verified Solidity contracts on Celo mainnet. Gas paid in cUSD, right inside MiniPay.' },
+            { title: 'Onchain by design', desc: 'Every AI call, payment and receipt is settled onchain — no hidden backend.' },
           ].map((item, i) => (
             <div
               key={item.title}

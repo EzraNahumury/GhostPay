@@ -59,7 +59,7 @@ export default function Section2Features() {
           ref={textRef} 
           className="font-heading font-black text-[10vw] md:text-[7vw] leading-[1.1] tracking-tighter text-[#F4F6FF]"
         >
-          {splitText("Write what you want. GhostPay translates your raw intent into instant blockchain transactions.  No boxes. No forms.        Just action.")}
+          {splitText("Ask AI, send stablecoins, store private data. One agent you own on Celo. Pay only for what you use. No subscription. Just use it.")}
         </div>
       </div>
     </section>

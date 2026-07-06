@@ -127,16 +127,20 @@ export default function Section8Footer() {
 
           {/* Text */}
           <h2 className="font-heading text-5xl md:text-7xl font-bold text-[#F4F6FF] mb-6 tracking-tight">
-            Ready to disappear?
+            Meet your agent.
           </h2>
           <p className="text-lg md:text-xl text-[#A7B0C8] max-w-[600px] mb-12">
-            Join the waitlist. We'll invite you in quietly.
+            Connect your wallet, create your onchain agent, and start paying per
+            AI call in cUSD. Live on Celo, built for MiniPay.
           </p>
 
           {/* CTA Button */}
-          <button className="px-10 py-5 rounded-full bg-[#FBCB0A] text-[#0B0C10] font-heading font-bold text-lg hover:scale-105 hover:shadow-[0_0_50px_rgba(251,203,10,0.6)] transition-all duration-300">
-            Join the Waitlist
-          </button>
+          <a
+            href="/dashboard"
+            className="inline-block px-10 py-5 rounded-full bg-[#FBCB0A] text-[#0B0C10] font-heading font-bold text-lg hover:scale-105 hover:shadow-[0_0_50px_rgba(251,203,10,0.6)] transition-all duration-300"
+          >
+            Launch the App
+          </a>
         </div>
       </div>
 

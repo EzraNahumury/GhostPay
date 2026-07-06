@@ -8,30 +8,49 @@ gsap.registerPlugin(ScrollTrigger);
 
 const plans = [
   {
-    name: 'Phantom',
-    description: 'For personal use',
+    name: 'Free to start',
+    description: 'Just connect a wallet',
     price: '$0',
-    period: '/mo',
-    features: ['5 sends per month', 'Basic scheduling', 'Standard support', 'Web access'],
-    cta: 'Start Free',
+    period: 'forever',
+    features: [
+      'Connect MiniPay or any Celo wallet',
+      'Create your onchain agent (an NFT you own)',
+      'Browse 20+ AI models',
+      'Your data stays yours',
+    ],
+    cta: 'Open App',
+    href: '/dashboard',
     highlighted: false,
   },
   {
-    name: 'Poltergeist',
-    description: 'For power users',
-    price: '$12',
-    period: '/mo',
-    features: ['Unlimited sends', 'Smart scheduling', 'Priority support', 'API access', 'Multi-chain'],
-    cta: 'Go Pro',
+    name: 'Pay-as-you-go',
+    description: 'Only pay for what you use',
+    price: '~0.001',
+    period: 'cUSD / call',
+    features: [
+      'Pay per AI call — no subscription',
+      '20+ free models (Gemma, GPT-OSS, Qwen…)',
+      'Pay in cUSD, USDC, USDT or CELO',
+      'Escrow + auto-refund if a call fails',
+      'Every call is an onchain receipt',
+    ],
+    cta: 'Start Chatting',
+    href: '/chat',
     highlighted: true,
   },
   {
-    name: 'Haunt',
-    description: 'For teams',
-    price: '$49',
-    period: '/mo',
-    features: ['Multi-agent', 'Shared vaults', 'SSO & SAML', 'Dedicated support', 'Custom integrations'],
-    cta: 'Contact Sales',
+    name: 'Open source',
+    description: 'Build on it, fork it',
+    price: 'MIT',
+    period: 'license',
+    features: [
+      'Fully open source',
+      'Verified contracts on Celo mainnet',
+      'Built for MiniPay',
+      'Self-host or extend',
+    ],
+    cta: 'View on GitHub',
+    href: 'https://github.com/EzraNahumury/GhostPay',
     highlighted: false,
   },
 ];
@@ -103,10 +122,11 @@ export default function Section7Pricing() {
         {/* Title */}
         <div ref={titleRef} className="text-center mb-10 md:mb-16 opacity-0">
           <h2 className="font-heading text-3xl md:text-[42px] font-semibold text-[#F4F6FF] mb-4 tracking-tight">
-            Pick your presence.
+            No subscription. Pay per use.
           </h2>
-          <p className="text-base md:text-lg text-[#A7B0C8] max-w-[480px] mx-auto">
-            Start free, upgrade when you need more power.
+          <p className="text-base md:text-lg text-[#A7B0C8] max-w-[520px] mx-auto">
+            Connect, create your agent, and pay only for the AI calls you actually
+            make — settled onchain in cUSD.
           </p>
         </div>
 
@@ -162,15 +182,17 @@ export default function Section7Pricing() {
                 </ul>
 
                 {/* CTA */}
-                <button
-                  className={`w-full py-3 rounded-full font-heading font-semibold text-sm transition-all duration-300 ${
+                <a
+                  href={plan.href}
+                  {...(plan.href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
+                  className={`w-full text-center py-3 rounded-full font-heading font-semibold text-sm transition-all duration-300 ${
                     plan.highlighted
                       ? 'bg-[#FBCB0A] text-[#0B0C10] hover:scale-105 hover:shadow-[0_0_30px_rgba(251,203,10,0.4)]'
                       : 'bg-[rgba(255,255,255,0.05)] text-[#F4F6FF] hover:bg-[rgba(251,203,10,0.2)] hover:text-[#FBCB0A]'
                   }`}
                 >
                   {plan.cta}
-                </button>
+                </a>
               </div>
             </div>
           ))}

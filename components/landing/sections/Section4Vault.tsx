@@ -1,15 +1,15 @@
 import { useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Shield, Fingerprint, FileCheck } from 'lucide-react';
+import { Shield, Database, FileCheck } from 'lucide-react';
 import GhostMascot from '../GhostMascot';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const chips = [
   { icon: Shield, label: 'Encrypted' },
-  { icon: Fingerprint, label: 'Biometric' },
-  { icon: FileCheck, label: 'Audited' },
+  { icon: Database, label: 'On IPFS' },
+  { icon: FileCheck, label: 'Onchain anchored' },
 ];
 
 export default function Section4Vault() {
@@ -151,7 +151,8 @@ export default function Section4Vault() {
                   Your vault. Your rules.
                 </h2>
                 <p className="text-sm md:text-base text-[#A7B0C8] leading-relaxed max-w-[420px]">
-                  End-to-end encryption. Local biometrics. Zero-knowledge architecture.
+                  Client-side encryption. Stored on IPFS. Anchored onchain. Share
+                  with an auditor only when you choose.
                 </p>
               </div>
 

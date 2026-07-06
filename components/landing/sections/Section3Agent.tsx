@@ -156,14 +156,14 @@ export default function Section3Agent() {
             {/* User bubble */}
             <div className="chat-bubble self-end max-w-[90%] bg-[rgba(255,255,255,0.06)] rounded-2xl rounded-tr-sm px-4 py-3 border border-[rgba(255,255,255,0.08)]">
               <p className="text-sm md:text-base text-[#F4F6FF]">
-                Send $120 to the design contractor every Friday.
+                Send 20 cUSD to my sister, then explain the fee.
               </p>
             </div>
 
             {/* Agent bubble */}
             <div className="chat-bubble self-start max-w-[95%] bg-[rgba(251,203,10,0.08)] rounded-2xl rounded-tl-sm px-4 py-3 border border-[rgba(251,203,10,0.25)]">
               <p className="text-sm md:text-base text-[#F4F6FF]">
-                Got it. Weekly $120 to Design Contractor •••1234. First send: this Friday.
+                Sent 20 cUSD on Celo — gas was ~$0.001, confirmed in ~1s. Receipt saved onchain. This answer cost you ~0.001 cUSD.
               </p>
             </div>
 
